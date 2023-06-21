@@ -23,7 +23,7 @@ const roleQuestions = [
     },
     {
         type: "input",
-        name: "department",
+        name: "department_id",
         message: "What department is this role a part of?"
     }
 ];
@@ -41,15 +41,21 @@ const employeeQuestions = [
     },
     {
         type: "input",
-        name: "role",
+        name: "role_id",
         message: "What is their role?"
     },
     {
         type: "input",
-        name: "manager",
+        name: "manager_id",
         message: "Who is thier manager?"
     }
 ];
+
+const dbConnection = mysql2.createConnection({
+    host: "localhost",
+    user: "root",
+    database: "company_db"
+});
 
 inquirer.prompt({
     type: "list",
@@ -58,22 +64,35 @@ inquirer.prompt({
     choices: ["view all departments", "view all roles", "view all employees", "add a department", "add a role", "add an employee", "update an employee role"]
 }).then((data) => {
     if (data.optionChoice == "view all departments") {
-        console.table("placeholder");
+        dbConnection.query("SELECT * FROM departments", function(err, results, fields) {
+            console.table(results);
+        });
     } else if (data.optionChoice == "view all roles") {
-        console.table("placeholder");
+        dbConnection.query("SELECT * FROM roles", function(err, results, fields) {
+            console.table(results);
+        });
     } else if (data.optionChoice == "view all employees") {
-        console.table("placeholder");
+        dbConnection.query("SELECT * FROM employees", function(err, results, fields) {
+            console.table(results);
+        });
+        // Not sure if bellow works
     } else if (data.optionChoice == "add a department") {
         inquirer.prompt(departmentQuestions).then((data) => {
-            console.log("hello world");
+            dbConnection.query(`INSERT INTO departments (name) VALUES (${data.name})`, function(err, results, fields) {
+                console.table(results);
+            });
         });
     } else if (data.optionChoice == "add a role") {
         inquirer.prompt(roleQuestions).then((data) => {
-            console.log("hello world");
+            dbConnection.query(`INSERT INTO roles (title, salary, department_id) VALUES (${data.title}, ${data.salary}, ${data.department_id})`, function(err, results, fields) {
+                console.table(results);
+            });
         });
     } else if (data.optionChoice == "add an employee") {
         inquirer.prompt(employeeQuestions).then((data) => {
-            console.log("hello world");
+            dbConnection.query(`INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES (${data.first_name}, ${data.last_name}, ${data.role_id}, ${data.manager_id})`, function(err, results, fields) {
+                console.table(results);
+            });
         });
     } else if (data.optionChoice == "update an employee role") {
         inquirer.prompt(employeeQuestions).then((data) => {
