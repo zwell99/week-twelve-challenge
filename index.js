@@ -75,7 +75,6 @@ inquirer.prompt({
         dbConnection.query("SELECT * FROM employees", function(err, results, fields) {
             console.table(results);
         });
-        // Not sure if bellow works
     } else if (data.optionChoice == "add a department") {
         inquirer.prompt(departmentQuestions).then((data) => {
             dbConnection.query(`INSERT INTO departments (name) VALUES (${data.name})`, function(err, results, fields) {
@@ -95,8 +94,15 @@ inquirer.prompt({
             });
         });
     } else if (data.optionChoice == "update an employee role") {
-        inquirer.prompt(employeeQuestions).then((data) => {
-            console.log("hello world");
+        var updateEmployeeQuestions = employeeQuestions.push({
+            type: "input",
+            name: "id",
+            message: "What is their employee id?"
+        });
+        inquirer.prompt(updateEmployeeQuestions).then((data) => {
+            dbConnection.query(`UPDATE employees SET first_name = ${data.firstName}, last_name = ${data.lastName}, role_id = ${data.role_id}, manager_id = ${data.manager_id} WHERE id = ${data_id}`, function(err, results, fields) {
+                console.table(results);
+            });
         });
     }
 });
